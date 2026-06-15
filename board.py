@@ -26,6 +26,7 @@ class connect_board:
         for i in kernels:
             if np.any(convolve2d(player_mask, i, mode='valid') == 4):
                 return True
+        return False
     
 
          
