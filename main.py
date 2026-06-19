@@ -1,16 +1,14 @@
 from board import connect_board
-
+from minmax import minmax
 def main():
     print("Hello from minmax-neural-c4!")
     board = connect_board()
-    board.print_board()
-    board.drop_piece(3, 1)
-    board.drop_piece(3, 1)
-    board.drop_piece(3, 1)
-    board.drop_piece(3, 1)
-    print("\n")
-    board.print_board()
-    print(board.check_winner(1))
+    for i in range(3):
+        board.drop_piece(1, 1)
+    
+    minmaxalg=minmax(board)
+    print(minmaxalg.eval(1))
+    
 
 
 

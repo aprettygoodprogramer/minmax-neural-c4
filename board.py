@@ -1,5 +1,7 @@
 import numpy as np
 from scipy.signal import convolve2d
+
+
 class connect_board:
     def __init__(self):
         self.board = np.zeros((6, 7), dtype=int)
@@ -27,6 +29,8 @@ class connect_board:
             if np.any(convolve2d(player_mask, i, mode='valid') == 4):
                 return True
         return False
+    def get_board(self):
+        return self.board
     
 
          
