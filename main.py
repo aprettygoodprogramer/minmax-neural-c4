@@ -3,7 +3,27 @@ from minmax import minmax
 from stable_baselines3 import DQN
 from ai import connect_dqn
 def main():
-    play_ai("dqn_connect4_v2.zip", "AI")
+    print("Welcome, what do you want to do?")
+    print("1: Train AI, 2: Play AI, 3: Play Minmax 4: Minmax vs Minmax")
+    option=input()
+    if option == "1":
+        print("Which Model do you want to train? (Enter the file name)")
+        model_name=input()
+        print("What do you want this model to be saved as?")
+        save_model_name=input()
+        print("How long do you want the model to train (in timesteps, eg 50000)")
+        timesteps = int(input())
+        train_model(timesteps, model_name, save_model_name)
+    if option == "2":
+        print("What model do you want to play? (Enter the filename)")
+        model_name=input()
+        print("Who do you want to go first? (AI or Human)")
+        first=input()
+        play_ai(model_name, first)
+    if option == "3":
+        minmax_vs_human()
+    if option == "4":
+        play_self()
  
 
 def play_ai(model_name, first):
@@ -56,16 +76,16 @@ def play_ai(model_name, first):
 
 
 
-def train_model(timesteps, model_name):
+def train_model(timesteps, model_name, save_model_name):
     new_env = connect_dqn()
 
-    model = DQN.load("dqn_connect4")
+    model = DQN.load(model_name)
 
     model.set_env(new_env)
 
     model.learn(total_timesteps=timesteps) 
 
-    model.save(model_name)
+    model.save(save_model_name)
 def minmax_vs_human():
     board = connect_board()
     minmaxalg=minmax(board)
