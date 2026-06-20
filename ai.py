@@ -2,6 +2,7 @@ from board import connect_board
 import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
+from minmax import minmax
 class connect_dqn(gym.Env):
     def __init__(self):
         super(connect_dqn, self).__init__()
@@ -10,6 +11,7 @@ class connect_dqn(gym.Env):
         self.observation_space = spaces.Box(
             low=-1, high=1, shape=(6, 7), dtype=int
         )
+        self.minmax = minmax(self.board)
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         self.board_env = connect_board() 
@@ -28,10 +30,11 @@ class connect_dqn(gym.Env):
             return self.board_env.get_board(), 0, True, False, {}
 
 
-        valid_moves = self.board_env.available_moves()
+        # valid_moves = self.board_env.available_moves()
         
-        opp_action = np.random.choice(valid_moves)
-        self.board_env.drop_piece(column=opp_action, player=-1)
+        # opp_action = np.random.choice(valid_moves)
+        best_move=self.minmax.find_best_move(self.board_env, 1, 1)
+        self.board_env.drop_piece(best_move, player=-1)
 
         if self.board_env.check_winner(player=-1):
             return self.board_env.get_board(), -1, True, False, {}

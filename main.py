@@ -3,14 +3,69 @@ from minmax import minmax
 from stable_baselines3 import DQN
 from ai import connect_dqn
 def main():
-    env = connect_dqn()
+    play_ai("dqn_connect4_v2.zip", "AI")
+ 
 
-    model = DQN("MlpPolicy", env, verbose=1, buffer_size=100000)
+def play_ai(model_name, first):
+    game = connect_board()
+    game_over = False
+    model = DQN.load(model_name)
 
-    model.learn(total_timesteps=500000)
+    HUMAN = -1
+    AI = 1
+    if first=="AI":
+        current_turn = AI 
+    else:
+        current_turn = HUMAN
 
-    model.save("dqn_connect4")
 
+    
+    while not game_over:
+        print("\n \n")
+        game.print_board()
+        if current_turn == HUMAN:
+            print("Which Collomn do you want to drop?")
+            col=int(input())
+            game.drop_piece(col, HUMAN)
+            if game.check_winner(HUMAN):
+                game.print_board()
+                print("You beat the clankerr!")
+                game_over = True
+        elif current_turn == AI:
+            obs = game.get_board()
+            action, _ = model.predict(obs, deterministic=True)
+            game.drop_piece(int(action), AI)
+        if game.check_winner(AI):
+            game.print_board()
+            print("The Clanker won...")
+            game_over = True
+        if not game_over and game.is_tie():
+            game.print_board()
+            print("67, its a tie")
+            game_over = True
+        if current_turn == AI:
+            current_turn=HUMAN
+        else:
+            current_turn=AI
+        
+
+
+
+
+
+
+
+
+def train_model(timesteps, model_name):
+    new_env = connect_dqn()
+
+    model = DQN.load("dqn_connect4")
+
+    model.set_env(new_env)
+
+    model.learn(total_timesteps=timesteps) 
+
+    model.save(model_name)
 def minmax_vs_human():
     board = connect_board()
     minmaxalg=minmax(board)
@@ -72,7 +127,6 @@ def play_self():
             print("Player 2 Won!")
 
             break
-
 
 
 
