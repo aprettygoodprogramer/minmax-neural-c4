@@ -2,16 +2,11 @@ import numpy as np
 from scipy.signal import convolve2d
 
 class minmax:
-    def __init__(self, connect_board):
-        self.connect_board=connect_board
+
     # evalulates board and returns it's "score"
     def eval(self, turn, board):
         
-
-        if turn == 1:
-            enemy_turn=2
-        else:
-            enemy_turn=1
+        enemy_turn = -turn 
 
         score=0
 
@@ -71,10 +66,8 @@ class minmax:
         return best_move
 
     def minmax(self, isMax, board, depth, player):
-        if player == 1:
-            enemy=2
-        else:
-            enemy=1
+        enemy = -player
+
         if board.check_winner(player):
             return 100000 + depth
         if board.check_winner(enemy):

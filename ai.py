@@ -11,7 +11,7 @@ class connect_dqn(gym.Env):
         self.observation_space = spaces.Box(
             low=-1, high=1, shape=(6, 7), dtype=int
         )
-        self.minmax = minmax(self.board)
+        self.minmax = minmax()
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         self.board_env = connect_board() 
@@ -33,7 +33,7 @@ class connect_dqn(gym.Env):
         # valid_moves = self.board_env.available_moves()
         
         # opp_action = np.random.choice(valid_moves)
-        best_move=self.minmax.find_best_move(self.board_env, 1, 1)
+        best_move = self.minmax.find_best_move(self.board_env, -1, 1)
         self.board_env.drop_piece(best_move, player=-1)
 
         if self.board_env.check_winner(player=-1):
