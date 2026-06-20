@@ -31,7 +31,18 @@ class connect_board:
         return False
     def get_board(self):
         return self.board
-    
+    def is_tie(self):
+        return np.all(self.board)
+    def available_moves(self):
+        zero_mask = (self.board == 0).any(axis=0)
+        incomplete_cols = np.where(zero_mask)[0]
+        return incomplete_cols
+    def copy(self):
+        new_board = connect_board()
+        new_board.board = np.copy(self.board)
+        return new_board
+
+
 
          
          
