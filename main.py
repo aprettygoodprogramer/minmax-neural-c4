@@ -1,6 +1,17 @@
 from board import connect_board
 from minmax import minmax
+from stable_baselines3 import DQN
+from ai import connect_dqn
 def main():
+    env = connect_dqn()
+
+    model = DQN("MlpPolicy", env, verbose=1, buffer_size=100000)
+
+    model.learn(total_timesteps=500000)
+
+    model.save("dqn_connect4")
+
+def minmax_vs_human():
     board = connect_board()
     minmaxalg=minmax(board)
     while True:
@@ -28,7 +39,6 @@ def main():
             board.print_board()
             print("Player 2 Won!")
             break
-
         
 
     
@@ -62,6 +72,8 @@ def play_self():
             print("Player 2 Won!")
 
             break
+
+
 
 
 if __name__ == "__main__":
