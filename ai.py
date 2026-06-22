@@ -33,7 +33,7 @@ class connect_dqn(gym.Env):
         
         opp_action = np.random.choice(valid_moves)
         #best_move = self.minmax.find_best_move(self.board_env, -1, 1)
-        #self.board_env.drop_piece(best_move, player=-1)
+        self.board_env.drop_piece(opp_action, player=-1)
 
         if self.board_env.check_winner(player=-1):
             return self.board_env.get_board(), -1, True, False, {}
