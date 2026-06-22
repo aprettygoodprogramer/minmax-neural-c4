@@ -21,8 +21,7 @@ class connect_dqn(gym.Env):
         is_val_move = self.board_env.drop_piece(column=action, player=1)
         
         if not is_val_move:
-            return self.board_env.get_board(), -10, True, False, {}
-
+            return self._get_obs(), -1.0, True, False, {"invalid_move": True}
         if self.board_env.check_winner(player=1):
             return self.board_env.get_board(), 1, True, False, {}
             
