@@ -1,5 +1,7 @@
 from board import connect_board
 from minmax import minmax
+import os
+
 from stable_baselines3 import DQN
 from ai import connect_dqn
 def main():
@@ -79,11 +81,25 @@ def play_ai(model_name, first):
 def train_model(timesteps, model_name, save_model_name):
     new_env = connect_dqn()
 
-    model = DQN.load(model_name)
+    file_path = model_name if model_name.endswith(".zip") else f"{model_name}.zip"
 
-    model.set_env(new_env)
+    if os.path.exists(file_path):
+        print(f"Found existing model '{model_name}'. Loading to continue training...")
+        model = DQN.load(model_name)
+        model.set_env(new_env)
+    else:
+        print(f"Model '{model_name}' not found. Creating a BRAND NEW model...")
+        model = DQN(
+            "MlpPolicy",
+            new_env,
+            buffer_size=100000,
+            learning_starts=10000,
+            target_update_interval=1000,
+            exploration_fraction=0.2,
+            verbose=1,
+        )
 
-    model.learn(total_timesteps=timesteps) 
+    model.learn(total_timesteps=timesteps)
 
     model.save(save_model_name)
 def minmax_vs_human():
