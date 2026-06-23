@@ -6,7 +6,7 @@ from stable_baselines3 import DQN
 from ai import connect_dqn
 def main():
     print("Welcome, what do you want to do?")
-    print("1: Train AI, 2: Play AI, 3: Play Minmax 4: Minmax vs Minmax")
+    print("1: Train AI, 2: Play AI, 3: Play Minmax 4: Minmax vs Minmax 5: Train Self 6: AI vs AI")
     option=input()
     if option == "1":
         print("Which Model do you want to train? (Enter the file name)")
@@ -26,6 +26,14 @@ def main():
         minmax_vs_human()
     if option == "4":
         play_self()
+    if option == "5":
+        train_self_play(20, 500000, "rockhouse_v2")
+    if option == "6":
+        m1=input("What model do you want?: ")
+        m2=input("Whats the seccond one?: ")
+        who=int(input("Who first? 1 or 2?"))
+        model_vs_model(m1, m2, who)
+
  
 
 def play_ai(model_name, first):
@@ -74,6 +82,54 @@ def play_ai(model_name, first):
 
 
 
+def model_vs_model(model_name1, model_name2, first):
+    game = connect_board()
+    game_over = False
+    model1 = DQN.load(model_name1)
+    model2 = DQN.load(model_name2)
+
+    AI1=1
+    AI2=-1
+    if first==1:
+        current_turn=AI1
+    else:
+        current_turn=AI2
+
+
+    
+    while not game_over:
+        print("\n \n")
+        game.print_board()
+        if current_turn == AI1:
+            obs = game.get_board()
+            action, _ = model1.predict(obs, deterministic=True)
+            game.drop_piece(int(action), AI1)
+
+
+            if game.check_winner(AI1):
+                print("\n")
+                game.print_board()
+                print("The First Clanker won!")
+                game_over = True
+        elif current_turn == AI2:
+            obs = game.get_board()
+            action, _ = model2.predict(obs, deterministic=True)
+            game.drop_piece(int(action), AI2)
+        if game.check_winner(AI2):
+            game.print_board()
+            print("The Seccond clanker won.")
+            game_over = True
+
+        if not game_over and game.is_tie():
+            print("\n")
+            game.print_board()
+            print("67, its a tie")
+            game_over = True
+        if current_turn == AI1:
+            current_turn=AI2
+        else:
+            current_turn=AI1
+        
 
 
 
@@ -164,6 +220,43 @@ def play_self():
 
             break
 
+
+def train_self_play(generations, timesteps_per_generation, base_name):
+    current_opponent = None 
+
+    for gen in range(1, generations + 1):
+        
+        opponent_model = None
+        if current_opponent is not None and os.path.exists(current_opponent):
+            opponent_model = DQN.load(current_opponent)
+        else:
+            print(" No opponent found. ")
+
+        env = connect_dqn(opponent_model=opponent_model)
+
+        agent_name = f"{base_name}_gen_{gen}.zip"
+        
+        if gen > 1:
+            model = DQN.load(current_opponent, env=env)
+        else:
+            print(f"makin new brain")
+            model = DQN(
+                "MlpPolicy",
+                env,
+                buffer_size=100000,
+                learning_starts=10000,
+                target_update_interval=1000,
+                exploration_fraction=0.2,
+                verbose=0, 
+            )
+
+        print(f"Training for {timesteps_per_generation} timesteps...")
+        model.learn(total_timesteps=timesteps_per_generation)
+
+        model.save(agent_name)
+        current_opponent = agent_name
+        
+        print(f"Generation {gen} complete and saved as '{agent_name}'.")
 
 
 if __name__ == "__main__":
